@@ -1,0 +1,65 @@
+
+## User Stage
+
+---> To Check the content of User STage -->
+LIST @~;
+
+--> this PUT command is not supported in Web UI instead use SnowSQL -->
+```
+put file:///C:\Komal_notes\Snowflake_Notes\SNOWFLAKE\Data\Mall_Customers.csv @~;
+```
+
+![alt text](output_screenshot\image.png)
+
+---> To remove the file from staging Area --->
+```
+rm @~;
+```
+![alt text](output_screenshot\remove_user_stage.png)
+
+---> to load the data into target table  - use COPY INTO command
+```
+COPY INTO DEV_DB.FILE_FORMAT.CUSTOMERS
+FROM @~
+FILE_FORMAT = 'DEV_DB.FILE_FORMAT.MYCSV_FF'
+ON_ERROR = 'SKIP_FILE';
+```
+
+## Table Stage
+
+--> Create a Table
+```
+CREATE TABLE CUSTOMERS (
+    CustomerID INT NOT NULL,
+    Gender STRING,
+    Age INT,
+    AnnualIncome INT,
+    Spending_Score INT,
+    PRIMARY KEY (CustomerID)
+);
+```
+
+---> Adding data into Table Internal Stage
+
+```
+put file:///C:\Komal_notes\Snowflake_Notes\SNOWFLAKE\Data\Mall_Customers.csv @DEV_DB.FILE_FORMAT.%CUSTOMERS;
+```
+
+![alt text](output_screenshot\Table_stage.png)
+
+---> To check the content of Table Stage
+```
+list @%customers;
+```
+
+---> to load the data into target table  - use COPY INTO command
+
+```
+COPY INTO DEV_DB.FILE_FORMAT.CUSTOMERS
+FROM @DEV_DB.FILE_FORMAT.%CUSTOMERS
+FILE_FORMAT = 'DEV_DB.FILE_FORMAT.MYCSV_FF'
+ON_ERROR = 'SKIP_FILE';
+```
+Note:
+If there is any change in the file/data, --> Again add into staging by removing the previous one
+[ if u again just re-run the PUT query, it will not make an update as it will be skipped because of the same name of file]

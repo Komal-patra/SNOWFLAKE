@@ -4,6 +4,8 @@ LIST @~;
 --> this PUT command is not supported in Web UI instead use SnowSQL -->
 put file:///C:\Users\Administrator\Downloads\employee_data.csv @~;
 
+put file:///C:\Komal_notes\Snowflake_Notes\SNOWFLAKE\Data\Mall_Customers.csv @~;
+
 ---> To check the content of Table STage --->
 LIST @%TEST;
 
