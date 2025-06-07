@@ -107,7 +107,6 @@ SELECT * FROM DIRECTORY(@DEV_DB.FILE_FORMAT.INTERNAL_NAMED_STAGE);
 
 Loading data from cloud services are the part of External Stage - (no need of ETL use to load data from different services)
 
-### Option 1 (Not the most Recommended Way)
 ----> 1. Create the External Stage from web UI inside the stages ----> select the cloud services.
             OR
         Through the SQL Command :
@@ -155,5 +154,5 @@ SELECT metadata$filename, t.$1, t.$2, t.$3, t.$4, t.$5 FROM @DEV_DB.FILE_FORMAT.
 SELECT * FROM DEV_DB.FILE_FORMAT.CUSTOMERS;
 ```
 
-### option 2: Copying Options from S3 using Storage Integration Object
+
 
