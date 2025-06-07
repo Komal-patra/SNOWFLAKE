@@ -53,7 +53,6 @@ list @%customers;
 ```
 
 ---> to load the data into target table  - use COPY INTO command
-
 ```
 COPY INTO DEV_DB.FILE_FORMAT.CUSTOMERS
 FROM @DEV_DB.FILE_FORMAT.%CUSTOMERS
@@ -63,3 +62,31 @@ ON_ERROR = 'SKIP_FILE';
 Note:
 If there is any change in the file/data, --> Again add into staging by removing the previous one
 [ if u again just re-run the PUT query, it will not make an update as it will be skipped because of the same name of file]
+
+
+## Named Stage
+
+---> create a Stage in WEB UI or else from snow SQL
+
+```
+CREATE STAGE internal_named_stage 
+	DIRECTORY = ( ENABLE = true );
+```
+
+---> Adding data into  Internal Named Stage
+
+```
+put file:///C:\Komal_notes\Snowflake_Notes\SNOWFLAKE\Data\Mall_Customers.csv @DEV_DB.FILE_FORMAT.INTERNAL_NAMED_STAGE;
+```
+---> to check the content of the Internal named Stage
+```
+LIST @DEV_DB.FILE_FORMAT.INTERNAL_NAMED_STAGE;
+```
+
+---> We can ALso query the data in Internal name stage and can see the rows and columns.
+```
+SELECT  t.$1, t.$2, t.$3, t.$4, t.$5 FROM @DEV_DB.FILE_FORMAT.INTERNAL_NAMED_STAGE t;
+```
+```
+SELECT metadata$filename, t.$1, t.$2, t.$3, t.$4, t.$5 FROM @DEV_DB.FILE_FORMAT.INTERNAL_NAMED_STAGE t;
+```
