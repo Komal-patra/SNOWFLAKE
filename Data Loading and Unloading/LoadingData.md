@@ -129,6 +129,7 @@ Loading data from cloud services are the part of External Stage - (no need of ET
 SELECT metadata$filename, t.$1, t.$2, t.$3, t.$4, t.$5 FROM @DEV_DB.FILE_FORMAT.AWS_EXTERNAL_STAGE t;
 
 ---> 3. Create the Target Table
+
     ```
     CREATE TABLE CUSTOMERS (
         CustomerID INT NOT NULL,
@@ -140,19 +141,86 @@ SELECT metadata$filename, t.$1, t.$2, t.$3, t.$4, t.$5 FROM @DEV_DB.FILE_FORMAT.
     );
     ```
 ----> 4. to load the data into target table  - use COPY INTO command
-    ```
+```
     COPY INTO DEV_DB.FILE_FORMAT.CUSTOMERS
     FROM @DEV_DB.FILE_FORMAT.AWS_EXTERNAL_STAGE
     FILE_FORMAT = 'DEV_DB.FILE_FORMAT.MYCSV_FF'
     ON_ERROR = 'SKIP_FILE'
     PURGE = FALSE
     FORCE = FALSE; ---> IF ITS true - the data will load again n will create the replication
-    ```
+```
 
 ----> Validate the table whether data is added
 ```
 SELECT * FROM DEV_DB.FILE_FORMAT.CUSTOMERS;
 ```
+-------------------------------------------------------------------------------------------------------------
+
+# Loading Data into JSON
+
+ JSON is a semi-structured data. 
+
+ Option 1: Either Load using Staging
+        OR
+ Option 2: Directly through Web UI.
+
+---------------------------------------------------------------------------------------------------------------
+
+# Unloading Data
+
+### Snowflake to Local file system
+1. Use COPY INTO <LOCATION> : to copy the data from Sowflake DB into one or more Flat files or external stage.
+2. Use GET : to download the  file in Local file system.
+
+---> Creating a file format for unloading CSV Data
+```
+CREATE OR REPLACE FILE FORMAT MY_CSV_UNLOAD
+TYPE = CSV
+FIELD_DELIMITER=','
+SKIP_HEADER=1
+NULL_IF=('NULL','null')
+EMPTY_FIELD_AS_NULL = TRUE
+COMPRESSION=GZIP;
+```
+
+---> Step 1:  Unloading The data from SNowflake Database into Staging Area using 'COPY INTO'
+```
+COPY INTO @%CUSTOMERS
+FROM CUSTOMERS
+FILE_FORMAT = MY_CSV_UNLOAD;
+```
+
+or
+
+```
+COPY INTO DEV_DB.FILE_FORMAT.INTERNAL_NAMED_STAGE
+FROM CUSTOMERS
+FILE_FORMAT = MY_CSV_UNLOAD;
+```
+![alt text](../output_screenshot/uNLOADINGcsv1.png)
+
+---> to check the content 
+```
+list @%customers;
+```
+![alt text](../output_screenshot/UnloadingCheckContent.png)
 
 
+---> Step 2: Unloading Data from Staging to Local File SYstem.
+```
+GET @%customers file://C:/Komal_notes/Snowflake_Notes/SNOWFLAKE/;
+```
 
+### Snowflake to AWS
+
+---> Loading Data from Sbowflake table to External Stage AWS
+```
+COPY INTO @AWS_EXTERNAL_STAGE
+FROM  CUSTOMERS
+FILE_FORMAT = MY_CSV_UNLOAD;
+```
+
+---> To check the content of External stage
+```
+LIST @AWS_EXTERNAL_STAGE;
+```
